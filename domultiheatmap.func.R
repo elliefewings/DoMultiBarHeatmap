@@ -101,7 +101,7 @@ DoMultiBarHeatmap <- function (object,
       group.use2 <- group.use
       cols <- list()
       na.group <- Seurat:::RandomName(length = 20)
-      for (colname in rev(x = colnames(group.use2))){
+      for (colname in colnames(group.use2)){
         if (colname == group.by){
           colid = paste0('Identity (', colname, ')')
         } else {
@@ -125,9 +125,9 @@ DoMultiBarHeatmap <- function (object,
         pbuild$layout$panel_params[[1]]$y.range <- c(pbuild$layout$panel_params[[1]]$y.range[1], y.max)
         
         plot <- suppressMessages(plot + 
-                                   annotation_raster(raster = t(x = cols[[colname]][group.use2[[colname]]]),  xmin = -Inf, xmax = Inf, ymin = y.pos, ymax = y.max) + 
+                                   annotation_raster(raster = t(x = cols[[colname]][group.use2[[colname]]]), xmin = -Inf, xmax = Inf, ymin = y.pos, ymax = y.max) + 
                                    annotation_custom(grob = grid::textGrob(label = colid, hjust = 0, gp = grid::gpar(cex = 0.75)), ymin = mean(c(y.pos, y.max)), ymax = mean(c(y.pos, y.max)), xmin = Inf, xmax = Inf) +
-                                   coord_cartesian(ylim = c(0, y.max), clip = "off")) 
+                                   coord_cartesian(ylim = c(0, y.max), clip = "off"))
         
         #temp <- as.data.frame(cols[[colname]][levels(group.use[[colname]])])
         #colnames(temp) <- 'color'
@@ -138,21 +138,25 @@ DoMultiBarHeatmap <- function (object,
         #legend <- get_legend(temp)
         #multiplot(plot, legend, heights=3,1)
         
-        if ((colname == group.by) && label) {
+        if ((colname != group.by) && label) {
           x.max <- max(pbuild$layout$panel_params[[1]]$x.range)
           x.divs <- pbuild$layout$panel_params[[1]]$x$break_positions()
           group.use$x <- x.divs
-          label.x.pos <- tapply(X = group.use$x, INDEX = group.use[[colname]],
+          label.unique <- paste(group.use[[colname]], group.use[[group.by]], sep="-")
+          label.x.pos <- tapply(X = group.use$x, INDEX = label.unique,
                                 FUN = median) * x.max
           label.x.pos <- data.frame(group = names(x = label.x.pos), 
                                     label.x.pos)
+          label.x.pos <- label.x.pos[!grepl("NA", label.x.pos$group),]
+          label.x.pos$group <- label.x.pos$group %>% lapply( function(x) gsub("-.*","", x))
           plot <- plot + geom_text(stat = "identity", 
                                    data = label.x.pos, aes_string(label = "group", 
                                                                   x = "label.x.pos"), y = y.max + y.max * 
                                      0.03 * 0.5, angle = angle, hjust = hjust, 
                                    size = size)
+          
           plot <- suppressMessages(plot + coord_cartesian(ylim = c(0, 
-                                                                   y.max + y.max * 0.002 * max(nchar(x = levels(x = group.use2[[colname]]))) * 
+                                                                   y.max + y.max * 0.002 * max(nchar(x = unique(group.use[[colname]])), na.rm=TRUE) * 
                                                                      size), clip = "off"))
         }
       }
