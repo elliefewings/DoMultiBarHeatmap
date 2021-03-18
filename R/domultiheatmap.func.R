@@ -177,13 +177,13 @@ DoMultiBarHeatmap <- function (object,
           x.max <- max(pbuild$layout$panel_params[[1]]$x.range)
           x.divs <- pbuild$layout$panel_params[[1]]$x$break_positions()
           group.use$x <- x.divs
-          label.unique <- paste(group.use[[colname]], group.use[[group.by]], sep="-")
+          label.unique <- paste(group.use[[colname]], group.use[[group.by]], sep="+=$")
           label.x.pos <- tapply(X = group.use$x, INDEX = label.unique,
                                 FUN = median) * x.max
           label.x.pos <- data.frame(group = names(x = label.x.pos), 
                                     label.x.pos)
           label.x.pos <- label.x.pos[!grepl("NA", label.x.pos$group),]
-          label.x.pos$group <- label.x.pos$group %>% lapply( function(x) gsub("-.*","", x))
+          label.x.pos$group <- label.x.pos$group %>% lapply( function(x) gsub("\\+\\=\\$.*","", x))
           plot <- plot + geom_text(stat = "identity", 
                                    data = label.x.pos, aes_string(label = "group", 
                                                                   x = "label.x.pos"), y = y.max + y.max * 
