@@ -1,3 +1,38 @@
+#' DoMultiBarHeatmap
+#'
+#' Builds on Seurat's Doheatmap function code to produce a heatmap from a Seurat object with multiple annotation bars.
+#' @name DoMultiBarHeatmap
+#' @param object Seurat object
+#' @param features A vector of features to plot, defaults to VariableFeatures(object = object)
+#' @param cells A vector of cells to plot
+#' @param group.by A vector of variables to group cells by; defaults to cell identity classes
+#' @param additional.group.by A second vector of variables to group cells by
+#' @param group.bar Add a color bar showing group status for cells (boolean)
+#' @param group.colors Colors to use for the color bar
+#' @param disp.min Minimum display value (all values below are clipped)
+#' @param disp.max Maximum display value (all values above are clipped); defaults to 2.5 if slot is 'scale.data', 6 otherwise
+#' @param slot Data slot to use, choose from 'raw.data', 'data', or 'scale.data'
+#' @param assay Assay to pull from
+#' @param label Label the cell identies above the color bar
+#' @param size Size of text above color bar
+#' @param hjust Horizontal justification of text above color bar
+#' @param angle Angle of text above color bar
+#' @param raster If true, plot with geom_raster, else use geom_tile. 
+#' geom_raster may look blurry on some viewing applications such as Preview 
+#' due to how the raster is interpolated. Set this to FALSE if you are 
+#' encountering that issue (note that plots may take longer to produce/render).
+#' @param draw.lines Include white lines to separate the groups
+#' @param lines.width Integer number to adjust the width of the separating 
+#' white lines. Corresponds to the number of "cells" between each group.
+#' @param group.bar.height Scale the height of the color bar
+#' @param combine Combine plots into a single patchworked ggplot object.
+#' If FALSE, return a list of ggplot objects
+#' @examples
+#' data("pbmc_small")
+#' DoMultiBarHeatmap(object = pbmc_small, group.by="cluster", additional.group.by="cell_type")
+#'
+#' @export
+
 suppressPackageStartupMessages({
   library(rlang)
 })
